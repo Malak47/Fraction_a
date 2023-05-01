@@ -1,6 +1,7 @@
 #!make -f
 
 CXX=clang++-14
+TIDY=clang-tidy-14
 CXXVERSION=c++2a
 SOURCE_PATH=sources
 OBJECT_PATH=objects
@@ -15,14 +16,14 @@ OBJECTS=$(subst sources/,objects/,$(subst .cpp,.o,$(SOURCES)))
 run: demo
 	./$^
 
-demo: Demo.o $(OBJECTS) 
+demo: objects/Demo.o $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-test: TestCounter.o Test.o $(OBJECTS)
+test: objects/TestCounter.o objects/Test.o $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 tidy:
-	clang-tidy $(HEADERS) $(TIDY_FLAGS) --
+	$(TIDY) $(HEADERS) $(TIDY_FLAGS) --
 
 valgrind: demo test
 	valgrind --tool=memcheck $(VALGRIND_FLAGS) ./demo 2>&1 | { egrep "lost| at " || true; }
